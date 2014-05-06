@@ -8,8 +8,8 @@ assumes the entire application needs password protected (the most likely scenari
 2 basic subsystems (home, admin). 
 
 Authentication is performed against the local LDAP server. If the user is authenticated with LDAP they have access
-to the application. If we need to limit the user to only those who have access to the current application, then need to
-write code to also check for permission to the app after successful LDAP authentication. This will need to be done in home/services/security.cfc.
+to the application. If we need to limit the user to only those who have permission to the current application, then need to
+write code for that after successful LDAP authentication. This will need to be done in home/services/security.cfc.
 
 ### To Do Before Starting New Project
 * Run "bower install" to download dependencies
