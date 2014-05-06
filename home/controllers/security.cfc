@@ -2,10 +2,10 @@
   <cfproperty name="securityService" />
 <!----------------------------------------------------------------------------------------->
 <cffunction name="init" output="false">
-    <cfargument name="fw" type="any" required="true" />
-    <cfset variables.fw = arguments.fw />
+  <cfargument name="fw" type="any" required="true" />
+  <cfset variables.fw = arguments.fw />
     
-    <cfreturn this />
+  <cfreturn this />
 </cffunction>  
 <!----------------------------------------------------------------------------------------->
 <cffunction name="login" output="false">
