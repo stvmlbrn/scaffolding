@@ -6,14 +6,6 @@
   </cfif>
 </cfif>
 
-<cfmail from="#application.projectName# <no-reply@acps.k12.md.us>" to="#application.adminEmail#" type="html" subject="#application.projectName# Error">
-  <h3>Session Data:</h3>
-  <cfdump var="#session#" />
-
-  <h3>Exception Data</h3>
-  <cfdump var="#request.exception#" />
-</cfmail>
-
 <div class="page-header">
 	<h3>Error...</h3>
 </div>
