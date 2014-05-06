@@ -53,6 +53,9 @@
         </div>
         
         <div class="col-md-6">
+          <cfif rc.action neq "home:security.login">
+          <span class="pull-right"><a href="index.cfm?action=home:security.login&logout"><i class="fa fa-sign-out"></i> Logout</a></span>
+          </cfif>
         </div>
       </div>        
       
