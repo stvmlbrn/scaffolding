@@ -12,6 +12,6 @@ to the application. If we need to limit the user to only those who have access t
 write code to also check for permission to the app after successful LDAP authentication. This will need to be done in home/services/security.cfc.
 
 ### To Do Before Starting New Project
-* Run "bower install"" to download dependencies
+* Run "bower install" to download dependencies
 * Change the reload password in application.cfc for the production environment
 * Change the application.projectName, application.adminEmail, and application.dsn variables
