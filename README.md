@@ -11,7 +11,8 @@ Authentication is performed against the local LDAP server. If the user is authen
 to the application. If we need to limit the user to only those who have permission to the current application, then need to
 write code for that after successful LDAP authentication. This will need to be done in home/services/security.cfc.
 
-### To Do Before Starting New Project
+### Before Starting New Project
 * Run "bower install" to download dependencies
 * Change the reload password in application.cfc for the production environment
 * Change the application.projectName, application.adminEmail, and application.dsn variables
+* Run the db.sql script to create the userLog and failedLogins tables. This file can then be removed from the project.
