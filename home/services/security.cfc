@@ -38,7 +38,7 @@
     </cfif>
     
   <cfelse> <!--- failed LDAP authentication --->
-    <cfset failedLogin(arguments.username, arguments.password, arguments.ipAddress, 'LDAP Failed') />
+    <cfset failedLogin(arguments.username, arguments.password, arguments.ipAddress, 'LDAP Failed') />user
   </cfif>
  
   <cfreturn local.user />
@@ -52,10 +52,9 @@
   <cfargument name="user_agent" type="string" required="yes" />
   
   <cfquery datasource="#application.dsn#">
-    insert into userLog (userID, userName, loginDate, IPAddress, browser) values (
+    insert into userLog (userID, userName, IPAddress, user_agent) values (
       <cfqueryparam value="#arguments.userID#" cfsqltype="cf_sql_bigint" />,
       <cfqueryparam value="#arguments.username#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#now()#" cfsqltype="cf_sql_timestamp" />,
       <cfqueryparam value="#arguments.ipAddress#" cfsqltype="cf_sql_varchar" />,
       <cfqueryparam value="#arguments.user_agent#" cfsqltype="cf_sql_varchar" />
     )
@@ -74,7 +73,7 @@
       <cfqueryparam value="#arguments.username#" cfsqltype="cf_sql_varchar" />,
       <cfqueryparam value="#arguments.password#" cfsqltype="cf_sql_varchar" />,
       <cfqueryparam value="#arguments.ipAddress#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.reason#" cfsqltype="cf_sql_varchar" />,
+      <cfqueryparam value="#arguments.reason#" cfsqltype="cf_sql_varchar" />
     )
   </cfquery>     
   
