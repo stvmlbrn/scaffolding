@@ -1,0 +1,11 @@
+{
+  "name": "Application Name", 
+  "version": "0.0.1",
+  "dependencies": {
+    "bootstrap": "latest",
+    "font-awesome": "latest",
+    "jquery": "1.11.0",
+    "handlebars": "latest",
+    "html5-boilerplate": "latest"
+  }
+}
