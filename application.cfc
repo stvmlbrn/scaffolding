@@ -47,9 +47,9 @@ Be sure to change this.name for each new project.
     <cfset application.projectName = "Scaffolding" />
     
     <cfif application.environment eq "prod">
-        <cfset application.dsn = "" />
+        <cfset application.dsn = "scaffolding" />
     <cfelseif application.environment eq "dev">
-        <cfset application.dsn = "" />
+        <cfset application.dsn = "scaffolding" />
     </cfif>
     
     <cfset local.homeBeanFactory = new ioc("/home/services") />
