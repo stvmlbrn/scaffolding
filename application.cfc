@@ -74,7 +74,7 @@ Be sure to change this.name for each new project.
       </cfif>    	
     </cfif>
     
-    <cfif getSubSystem() eq "admin" && session.user.admin neq "Y">
+    <cfif getSubSystem() eq "admin" && not session.user.admin>
       <cfset redirect("home:main.access_denied") />
     </cfif>
     
@@ -82,7 +82,8 @@ Be sure to change this.name for each new project.
 <!--------------------------------------------------------------------->
 <cffunction name="setupSession">
     <cfset session.user = {
-        isLoggedIn = false 
+        isLoggedIn = false,
+        admin = false
     } />
 </cffunction>
 <!--------------------------------------------------------------------->
