@@ -1,82 +1,59 @@
-<cfcomponent output="false">
-<!----------------------------------------------------------------------------------------->
-<cffunction name="init" access="public" output="false">
-  <cfreturn this />
-</cffunction>
-<!----------------------------------------------------------------------------------------->
-<cffunction name="authenticate" access="public" output="false" returntype="struct">
-  <cfargument name="username" type="string" required="yes" />
-  <cfargument name="password" type="string" required="yes" />
-  <cfargument name="ipAddress" type="string" required="yes" />
-  <cfargument name="user_agent" type="string" required="yes" />
-  
-  <cfset local.authenticated = false />
-  <cfset local.user = {} />
+component {
+	public struct function init() {
+		return this;
+	}
+	//-----------------------------------------------------------------------------------------
+	public struct function authenticate(string username, string password, string ipAddress, string user_agent) {
+		local.authenticated = false;
+		local.user = {};
+		local.objAD = createObject("webservice","http://webservices.allconet.org/activeDirectory.cfc?wsdl");
 
-  <cfset local.objAD = createObject("webservice", "http://webservices.allconet.org/activeDirectory.cfc?wsdl") />
+		if (local.objAD.authenticate(arguments.username, arguments.password)) { //LDAP authentication successful
+			local.employeeNumber = local.objAD.getEmployeeNumber(arguments.username);
+			if (len(trim(local.employeeNumber))) { //make sure user is a teacher, not a student
+				/* 
+				May need to ensure the user has access to the application by checking a "users" table in the database for this project.
+		        This boilerplate code assumes that LDAP authentication is enough to access the app. If we need to also check
+		        that the user has access to the application, the code to do so would go here.
+		        
+		        Also may need to add return additional attributes for certain applications. Add them to local.user if needed.
+				*/
+				local.details = local.objAD.getUserDetails(local.employeeNumber);
+				local.user = {
+					employeeNumber = local.details.employeeNumber,
+					fname = local.details.fname,
+					lname = local.details.lname,
+					email = local.details.email
+				};
 
-  <cfif local.objAD.authenticate(arguments.username, arguments.password)> <!--- LDAP authentication successful --->
-    <cfset local.employeeNumber = local.objAD.getEmployeeNumber(arguments.username) />
-    
-    <cfif len(trim(local.employeeNumber))> <!--- make sure the user is a teacher, not a student --->
-      <!---
-        May need to ensure the user has access to the application by checking a "users" table in the database for this project.
-        This boilerplate code assumes that LDAP authentication is enough to access the app. If we need to also check
-        that the user has access to the application, the code to do so would go here.
-        
-        Also may need to add return additional attributes for certain applications. Add them to local.user if needed.
-      --->
-      <cfset local.details = local.objAD.getUserDetails(local.employeeNumber) />
-      <cfset local.user = {
-        employeeNumber = local.details.employeeNumber,
-        fname = local.details.fname,
-        lname = local.details.lname,
-        email = local.details.email
-      } />
-      
-      <cfset logUser(arguments.username, local.user.employeeNumber, arguments.ipAddress, arguments.user_agent) />   
-    </cfif>
-    
-  <cfelse> <!--- failed LDAP authentication --->
-    <cfset failedLogin(arguments.username, arguments.password, arguments.ipAddress, 'LDAP Failed') />user
-  </cfif>
- 
-  <cfreturn local.user />
+				logUser(arguments.username, local.user.employeeNumber, arguments.ipAddress, arguments.user_agent);
+			}
+		} else { //LDAP authentication failed
+			failedLogin(arguments.username, arguments.password, arguments.ipAddress, 'LDAP Failed');
+		}
 
-</cffunction>
-<!----------------------------------------------------------------------------------------->
-<cffunction name="logUser" access="private" output="false" returntype="void">
-  <cfargument name="username" type="string" required="yes" />
-  <cfargument name="userID" type="numeric" required="yes" />
-  <cfargument name="ipAddress" type="string" required="yes" />
-  <cfargument name="user_agent" type="string" required="yes" />
-  
-  <cfquery datasource="#application.dsn#">
-    insert into userLog (userID, userName, IPAddress, user_agent) values (
-      <cfqueryparam value="#arguments.userID#" cfsqltype="cf_sql_bigint" />,
-      <cfqueryparam value="#arguments.username#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.ipAddress#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.user_agent#" cfsqltype="cf_sql_varchar" />
-    )
-  </cfquery>     
-  
-</cffunction>
-<!----------------------------------------------------------------------------------------->
-<cffunction name="failedLogin" access="private" output="false" returntype="void">
-  <cfargument name="username" type="string" required="yes" />
-  <cfargument name="password" type="string" required="yes" />
-  <cfargument name="ipAddress" type="string" required="yes" />
-  <cfargument name="reason" type="string" required="yes" />
-  
-  <cfquery datasource="#application.dsn#">
-    insert into failedLogins (userName, password, ipaddress, reason) values (
-      <cfqueryparam value="#arguments.username#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.password#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.ipAddress#" cfsqltype="cf_sql_varchar" />,
-      <cfqueryparam value="#arguments.reason#" cfsqltype="cf_sql_varchar" />
-    )
-  </cfquery>     
-  
-</cffunction>
-<!----------------------------------------------------------------------------------------->  
-</cfcomponent>
+		return local.user;
+	}
+	//-----------------------------------------------------------------------------------------
+	private void function logUser(string username, string userID, string ipAddress, string user_agent) {
+		local.query = new Query();
+		local.sql = "insert into userLog (userID, userName, IPAddress, user_agent) values (:userID, :userName, :ipAddress, :user_agent)";
+		local.query.setAttributes({"datasource" = application.dsn, "sql" = local.sql});
+		local.query.addParam(name="userID", value=arguments.userID, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="userName", value=arguments.username, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="ipAddress", value=arguments.ipAddress, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="user_agent", value=arguments.user_agent, cfsqltype="cf_sql_varchar");
+		local.query.execute();
+	}
+	//-----------------------------------------------------------------------------------------
+	private void function failedLogin(string username, string password, string ipAddress, string reason) {
+		local.query = new Query();
+		local.sql = "insert into failedLogins (userName, password, IPAddress, reason) values (:userName, :password, :ipAddress, :reason)";
+		local.query.setAttributes({"datasource" = application.dsn, "sql" = local.sql});
+		local.query.addParam(name="userName", value=arguments.username, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="password", value=arguments.password, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="ipAddress", value=arguments.ipAddress, cfsqltype="cf_sql_varchar");
+		local.query.addParam(name="reason", value=arguments.reason, cfsqltype="cf_sql_varchar");
+		local.query.execute();
+	}
+}
