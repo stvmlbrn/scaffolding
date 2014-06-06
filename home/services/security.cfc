@@ -34,7 +34,7 @@
         email = local.details.email
       } />
       
-      <cfset logUser(arguments.username, local.user.userID, arguments.ipAddress, arguments.user_agent) />   
+      <cfset logUser(arguments.username, local.user.employeeNumber, arguments.ipAddress, arguments.user_agent) />   
     </cfif>
     
   <cfelse> <!--- failed LDAP authentication --->
