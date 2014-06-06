@@ -2,7 +2,7 @@ component accessors=true {
  	property securityService;
   	//------------------------------------------------------------------------------------------
   	function init(fw) {
-    	variables.fw = fw;
+    	variables.fw = arguments.fw;
     	return this;
 	}
   	//------------------------------------------------------------------------------------------
