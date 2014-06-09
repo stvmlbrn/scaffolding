@@ -26,6 +26,7 @@ component accessors=true {
 	  		if (!structIsEmpty(local.user)) {
 	  			session.user = {
 	  				isLoggedIn = true,
+	  				admin = false,
 	  				fname = local.user.fname,
 	  				lname = local.user.lname,
 	  				email = local.user.email
