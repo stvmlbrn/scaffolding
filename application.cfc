@@ -1,101 +1,81 @@
-<cfcomponent extends="org.corfield.framework">
-    
-<!---
-Be sure to change this.name for each new project.
---->  
-<cfscript>
-    this.sessionManagement = true; 
+component extends="org.corfield.framework" {
+	//be sure to change this.name for each new project
+	this.sessionManagement = true; 
     this.scriptprotect = "all";
     this.name = "AppName-#hash(getCurrentTemplatePath())#"; 
     this.sessionTimeout = createTimeSpan(0,1,0,0);
     this.applicationTimeout = createTimeSpan(0,7,0,0);
     this.setClientCookies = true;  
-</cfscript>
+    // **********************************************************************************************
+    function getEnvironment() {
+    	if (listFindNoCase(cgi.server_name, "dev", ".")) {
+    		return "dev";
+    	} else {
+    		return "prod";
+    	}
+    }
+    // ********************************************************************************************** 
+    variables.framework = {
+    	usingSubsystems = true
+    };
+    // **********************************************************************************************   
+    variables.framework.environments = {
+    	dev = {
+    		reloadApplicationOnEveryRequest = true
+    	},
+    	prod = {
+    		password = "password" //Be sure to change the reload password
+    	}
+    };
+    // **********************************************************************************************    
+    function setupApplication() {
+    	//Need to set the adminEmail, datasource, and projectName vars
+    	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
 
-<cffunction name="getEnvironment">
-    <cfif listFindNoCase(cgi.server_name, "dev", ".")>
-        <cfreturn "dev" />
-    <cfelse>
-        <cfreturn "prod" />
-    </cfif>
-</cffunction>
+    	application.environment = getEnvironment();
+    	application.adminEmail = "";
+    	applicaion.schoolYear = local.objACPS.schoolYear(now());
+    	application.projectName = "Scaffolding";
+    	if (application.environment eq "prod") {
+    		application.dsn = "scaffolding";
+    	} else if (application.environment eq "dev") {
+    		application.dsn = "scaffolding";
+    	}
 
-<cfset variables.framework = {
-  usingSubsystems = true
-} />
+    	local.homeBeanFactory = new ioc("/home/services");
+    	setSubsystemBeanFactory("home", local.homeBeanFactory);
+    	local.adminBeanFactory = new ioc("/admin/services");
+    	setSubsystemBeanFactory("admin", local.adminBeanFactory);
+    }
+    // **********************************************************************************************
+    function setupRequest() {
+    	param name="session.user.isLoggedIn" default="false";
 
-<!--- Be sure to change the reload password for the production environment --->
-<cfset variables.framework.environments = {
-  dev = {
-    reloadApplicationOnEveryRequest = true        
-  },
-  prod = {
-    password = "password"
-  }    
-} />            
-    
-<!--------------------------------------------------------------------->    
-<cffunction name="setupApplication">
-    <!---
-    Need to set the adminEmail, datasource, and projectName vars
-    --->
-    <cfset local.objACPS = createObject("webservice","http://webservices.allconet.org/acps.cfc?wsdl") />
-    
-    <cfset application.environment = getEnvironment() />
-    <cfset application.adminEmail = "" />
-    <cfset application.schoolYear = local.objACPS.schoolYear(now()) />
-    <cfset application.projectName = "Scaffolding" />
-    
-    <cfif application.environment eq "prod">
-        <cfset application.dsn = "scaffolding" />
-    <cfelseif application.environment eq "dev">
-        <cfset application.dsn = "scaffolding" />
-    </cfif>
-    
-    <cfset local.homeBeanFactory = new ioc("/home/services") />
-    <cfset setSubsystemBeanFactory("home",local.homeBeanFactory) /> 
-    <cfset local.adminBeanFactory = new ioc("/admin/services") /> 
-    <cfset setSubsystemBeanFactory("admin",local.adminBeanFactory) /> 
-    
-</cffunction>   
-<!--------------------------------------------------------------------->
-<cffunction name="setupRequest">    
-    <cfparam name="session.user.isLoggedIn" default="false" />
-    
-    <cfset local.bypass = "home:security.login" />  
-    
-    <cfif listContainsNoCase(local.bypass, request.action) eq 0 && not session.user.isLoggedIn>
-    	<cfset reqData = getHTTPRequestData() />
-      <cfif structKeyExists(reqData.headers,"X-Requested-With") && reqData.headers["X-Requested-With"] eq "XMLHttpRequest">
-        <cfthrow message="SessionTimeout" />        
-      <cfelse>
-        <cflocation url="index.cfm?action=security.login" addtoken="false" />
-    	  <cfabort />
-      </cfif>    	
-    </cfif>
-    
-    <cfif getSubSystem() eq "admin" && not session.user.admin>
-      <cfset redirect("home:main.access_denied") />
-    </cfif>
-    
-</cffunction>
-<!--------------------------------------------------------------------->
-<cffunction name="setupSession">
-    <cfset session.user = {
-        isLoggedIn = false,
-        admin = false
-    } />
-</cffunction>
-<!--------------------------------------------------------------------->
-<cffunction name="onMissingView">
-   <cfargument name="rc" />
-             
-   <cfmail from="#application.projectName# <no-reply@acps.k12.md.us>" to="#application.adminEmail#" type="html" subject="404 - Missing Template">            
-        Requested View: #rc.action#        
-    </cfmail>
-    <cfreturn view('home:main/404') />
-    
-</cffunction>
-<!--------------------------------------------------------------------->
+    	local.bypass = "home:security.login";
 
-</cfcomponent>
+    	if (listContainsNoCase(local.bypass, request.action) eq 0 && not session.user.isLoggedIn) {
+    		local.reqData = getHTTPRequestData();
+    		if (structKeyExists(local.reqData.headers, "X-Requested-Width") && local.reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
+    			throw(message="SessionTimeout");
+			} else {
+				redirect("home:security.login");				
+			}
+    	}
+
+    	if (getSubSystem() eq "admin" && not session.user.admin) {
+    		redirect("home:main.access_denied");
+    	}
+    }
+    // **********************************************************************************************
+    function setupSession() {
+    	session.user = {
+    		isLoggedIn = false,
+    		admin = false
+    	};
+    }
+    // **********************************************************************************************
+    function onMissingView(rc) {
+    	return view("home:main/404");
+    }
+    // **********************************************************************************************
+}
