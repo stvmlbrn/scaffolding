@@ -6,6 +6,20 @@ component extends="org.corfield.framework" {
     this.sessionTimeout = createTimeSpan(0,1,0,0);
     this.applicationTimeout = createTimeSpan(0,7,0,0);
     this.setClientCookies = true;  
+    // ********************************************************************************************** 
+    variables.framework = {
+        usingSubsystems = true,
+        base = "/app"
+    };
+    // **********************************************************************************************   
+    variables.framework.environments = {
+        dev = {
+            reloadApplicationOnEveryRequest = true
+        },
+        prod = {
+            password = "password" //Be sure to change the reload password
+        }
+    };
     // **********************************************************************************************
     function getEnvironment() {
     	if (listFindNoCase(cgi.server_name, "dev", ".")) {
@@ -13,38 +27,29 @@ component extends="org.corfield.framework" {
     	} else {
     		return "prod";
     	}
-    }
-    // ********************************************************************************************** 
-    variables.framework = {
-    	usingSubsystems = true
-    };
-    // **********************************************************************************************   
-    variables.framework.environments = {
-    	dev = {
-    		reloadApplicationOnEveryRequest = true
-    	},
-    	prod = {
-    		password = "password" //Be sure to change the reload password
-    	}
-    };
+    }    
     // **********************************************************************************************    
     function setupApplication() {
     	//Need to set the adminEmail, datasource, and projectName vars
     	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
 
     	application.environment = getEnvironment();
-    	application.adminEmail = "";
     	applicaion.schoolYear = local.objACPS.schoolYear(now());
     	application.projectName = "Scaffolding";
+
     	if (application.environment eq "prod") {
     		application.dsn = "scaffolding";
+            local.config = expandPath("/config/prod.json");
     	} else if (application.environment eq "dev") {
     		application.dsn = "scaffolding";
+            local.config = expandPath("/config/dev.json");
     	}
 
-    	local.homeBeanFactory = new ioc("/home/services");
+        application.config = deserializeJSON(fileRead(local.config));
+
+    	local.homeBeanFactory = new ioc("/app/home/services");
     	setSubsystemBeanFactory("home", local.homeBeanFactory);
-    	local.adminBeanFactory = new ioc("/admin/services");
+    	local.adminBeanFactory = new ioc("/app/admin/services");
     	setSubsystemBeanFactory("admin", local.adminBeanFactory);
     }
     // **********************************************************************************************
