@@ -30,7 +30,7 @@ component extends="org.corfield.framework" {
     }    
     // **********************************************************************************************    
     function setupApplication() {
-    	//Need to set the adminEmail, datasource, and projectName vars
+    	//Need to set the datasource, and projectName vars. Also be sure to add/change things in the config/*.json files.
     	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
 
     	application.environment = getEnvironment();
