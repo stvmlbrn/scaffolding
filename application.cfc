@@ -88,7 +88,7 @@ component extends="org.corfield.framework" {
 
         local.mailer = new mail();
         local.mailer.setTo(application.config.adminEmail);
-        local.mailer.setFrom(application.name & " <no-reply@noreply.com>");
+        local.mailer.setFrom(application.projectName & " <no-reply@noreply.com>");
         local.mailer.setSubject("404 - Missing Template");
         local.mailer.setType("html");
         local.mailer.send(body=local.body); 
