@@ -12,7 +12,7 @@ to the application. If we need to limit the user to only those who have permissi
 write code for that after successful LDAP authentication. This will need to be done in home/services/security.cfc.
 
 ### Before Starting New Project
-* Run "bower install" to download front-end dependencies
+* Run "bower install" to download front-end dependencies (be sure assets/libs exists)
 * Change the reload password in application.cfc for the production environment
 * Change the application.projectName and application.dsn variables in application.cfc
 * Change/add any necessary information in the /config JSON files (change adminEmail is required)
