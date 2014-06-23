@@ -9,7 +9,8 @@ component extends="org.corfield.framework" {
     // ********************************************************************************************** 
     variables.framework = {
         usingSubsystems = true,
-        base = "/app"
+        base = "/app",
+        error = "home:error_pages.error"
     };
     // **********************************************************************************************   
     variables.framework.environments = {
@@ -80,7 +81,21 @@ component extends="org.corfield.framework" {
     }
     // **********************************************************************************************
     function onMissingView(rc) {
-    	return view("home:main/404");
+         savecontent variable="local.body" {
+            writeDump(var=session, label="Session Data");
+            writeDump(var=cgi, label="CGI Data");
+        };
+
+        local.mailer = new mail();
+        local.mailer.setTo(application.config.adminEmail);
+        local.mailer.setFrom(application.name & " <no-reply@noreply.com>");
+        local.mailer.setSubject("404 - Missing Template");
+        local.mailer.setType("html");
+        local.mailer.send(body=local.body); 
+        
+        getPageContext().getResponse().setStatus(404);
+
+    	return view("home:error_pages/404");
     }
     // **********************************************************************************************
 }
