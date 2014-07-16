@@ -59,9 +59,9 @@ component extends="org.corfield.framework" {
 
     	local.bypass = "home:security.login";
 
-    	if (listContainsNoCase(local.bypass, request.action) eq 0 && not session.user.isLoggedIn) {
+    	if (listContainsNoCase(local.bypass, request.action) eq 0 && (not session.user.isLoggedIn or structKeyExists(session,"user") eq 0)) {
     		local.reqData = getHTTPRequestData();
-    		if (structKeyExists(local.reqData.headers, "X-Requested-Width") && local.reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
+    		if (structKeyExists(local.reqData.headers, "X-Requested-With") && local.reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
     			throw(message="SessionTimeout");
 			} else {
 				redirect("home:security.login");				
