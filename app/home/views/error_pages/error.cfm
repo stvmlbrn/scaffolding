@@ -1,11 +1,3 @@
-<cfif structKeyExists(request.exception, "rootcause")>
-  <cfif request.exception.rootcause.message eq "SessionTimeout">
-	  <cfheader name="sessionTimeout" value="1" />
-	  Session Timeout
-	  <cfabort />
-  </cfif>
-</cfif>
-
 <div class="page-header">
 	<h3>Error...</h3>
 </div>
