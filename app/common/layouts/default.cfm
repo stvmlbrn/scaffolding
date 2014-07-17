@@ -26,6 +26,7 @@
     <script type="text/javascript">
       $(function() {		 
         $.ajaxSetup({
+          cache:false,
           error:function(x,e){
             var sessionTimeout = x.getResponseHeader("sessionTimeout");
             if (sessionTimeout) {
