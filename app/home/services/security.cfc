@@ -38,7 +38,7 @@ component {
 	private void function logUser(string username, string userID, string ipAddress, string user_agent) {
 		local.query = new Query();
 		local.sql = "insert into userLog (userID, userName, IPAddress, user_agent) values (:userID, :userName, :ipAddress, :user_agent)";
-		local.query.setAttributes({"datasource" = application.dsn, "sql" = local.sql});
+		local.query.setAttributes({"datasource" = application.config.ds, "sql" = local.sql});
 		local.query.addParam(name="userID", value=arguments.userID, cfsqltype="cf_sql_varchar");
 		local.query.addParam(name="userName", value=arguments.username, cfsqltype="cf_sql_varchar");
 		local.query.addParam(name="ipAddress", value=arguments.ipAddress, cfsqltype="cf_sql_varchar");
@@ -49,7 +49,7 @@ component {
 	private void function failedLogin(string username, string password, string ipAddress, string reason) {
 		local.query = new Query();
 		local.sql = "insert into failedLogins (userName, password, IPAddress, reason) values (:userName, :password, :ipAddress, :reason)";
-		local.query.setAttributes({"datasource" = application.dsn, "sql" = local.sql});
+		local.query.setAttributes({"datasource" = application.config.ds, "sql" = local.sql});
 		local.query.addParam(name="userName", value=arguments.username, cfsqltype="cf_sql_varchar");
 		local.query.addParam(name="password", value=arguments.password, cfsqltype="cf_sql_varchar");
 		local.query.addParam(name="ipAddress", value=arguments.ipAddress, cfsqltype="cf_sql_varchar");

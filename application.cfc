@@ -39,10 +39,8 @@ component extends="org.corfield.framework" {
     	application.projectName = "Scaffolding";
 
     	if (application.environment eq "prod") {
-    		application.dsn = "scaffolding";
             local.config = expandPath("/config/prod.json");
     	} else if (application.environment eq "dev") {
-    		application.dsn = "scaffolding";
             local.config = expandPath("/config/dev.json");
     	}
 
