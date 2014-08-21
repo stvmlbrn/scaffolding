@@ -14,6 +14,6 @@ write code for that after successful LDAP authentication. This will need to be d
 ### Before Starting New Project
 * Run "bower install" to download front-end dependencies
 * Change the reload password in application.cfc for the production environment
-* Change the application.projectName and application.dsn variables in application.cfc
-* Change/add any necessary information in the /config JSON files (change adminEmail is required)
+* Change the application.projectName variable in application.cfc
+* Change/add any necessary information in the /config JSON files (change adminEmail is important to receive error reports)
 * Run the db.sql script to create the userLog and failedLogins tables. This file can then be removed from the project
