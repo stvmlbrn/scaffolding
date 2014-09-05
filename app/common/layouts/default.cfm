@@ -13,32 +13,16 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     
-    <link rel="stylesheet" href="/assets/libs/html5-boilerplate/css/normalize.css">
-    <link rel="stylesheet" href="/assets/libs/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/assets/css/main.css" />
-    <link rel="stylesheet" href="/assets/libs/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/assets/dist/libs/html5-boilerplate/css/normalize.css">
+    <link rel="stylesheet" href="/assets/dist/libs/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/assets/dist/css/main.min.css" />
+    <link rel="stylesheet" href="/assets/dist/libs/font-awesome/css/font-awesome.min.css" />
     
     <!--- <link rel="icon" type="image/png" href="/assets/img/appIcon.png" /> --->
-    <script type="text/javascript" src="/assets/libs/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/libs/handlebars/handlebars.min.js"></script>
-    <script type="text/javascript" src="/assets/js/errors.js"></script>
-    <script type="text/javascript">
-      $(function() {		 
-        $.ajaxSetup({
-          cache:false,
-          error:function(x,e){
-            var sessionTimeout = x.getResponseHeader("sessionTimeout");
-            if (sessionTimeout) {
-                alert("Your session has expired");
-                location.href = "index.cfm?action=home:security.login";	
-            } else {
-                alert("An error occurred accessing remote method."); 
-            }				
-           }
-        });	
-      });	
-    </script>
+    <script type="text/javascript" src="/assets/dist/libs/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/dist/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/dist/libs/handlebars/handlebars.min.js"></script>
+    <script type="text/javascript" src="/assets/dist/js/main.js"></script>
     
 </head>
 
