@@ -33,7 +33,7 @@
     <![endif]-->
       <div class="row">
         <div class="col-md-6">
-           <a href="/"><img src="/assets/img/acps.jpg" /></a>
+           <a href="/"><img src="/assets/dist/img/acps.jpg" /></a>
         </div>
         
         <div class="col-md-6">
