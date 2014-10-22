@@ -11,6 +11,8 @@ Authentication is performed against the local LDAP server. If the user is authen
 to the application. If we need to limit the user to only those who have permission to the current application, then need to
 write code for that after successful LDAP authentication. This will need to be done in home/services/security.cfc.
 
+Code in this project is designed for ColdFusion 11.
+
 ### Before Starting New Project
 * Run "bower install" to download front-end dependencies
 * Run "npm install" to download/install dev dependencies
