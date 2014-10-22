@@ -14,7 +14,7 @@ write code for that after successful LDAP authentication. This will need to be d
 ### Before Starting New Project
 * Run "bower install" to download front-end dependencies
 * Run "npm install" to download/install dev dependencies
---* When developing on Windows the paths in the node_modules folder may be too long to function properly. A fix is to install
+    * When developing on Windows the paths in the node_modules folder may be too long to function properly. A fix is to install
 "rimraf" package - npm install -g rimfaf 
 * Run "grunt" to create initial distribution files and folders
 * Change the reload password in application.cfc for the production environment
