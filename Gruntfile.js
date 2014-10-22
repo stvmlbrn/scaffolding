@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 				}]
 			}
 		},
-		
+
 		handlebars: {
 			options: {
 				processName: function(filePath) {
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-
+		
 		watch: {
 			css: {
 				files: ["assets/src/css/**/*.css"],
@@ -87,5 +87,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-imagemin");
 	grunt.loadNpmTasks("grunt-contrib-handlebars");
 	
-	grunt.registerTask("default",["jshint","uglify","imagemin","cssmin","handlebars","concurrent"]);	
+	grunt.registerTask("default",["jshint","uglify","imagemin","cssmin","handlebars","concurrent"]);
 };
