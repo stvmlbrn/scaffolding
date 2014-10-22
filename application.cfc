@@ -6,6 +6,7 @@ component extends="org.corfield.framework" {
     this.sessionTimeout = createTimeSpan(0,1,0,0);
     this.applicationTimeout = createTimeSpan(0,7,0,0);
     this.setClientCookies = true;  
+    this.datasource = "scaffolding"; //be sure to change
     // ********************************************************************************************** 
     variables.framework = {
         usingSubsystems = true,
