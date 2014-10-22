@@ -8,6 +8,8 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-concurrent": "~0.5.0",
     "grunt-newer": "~0.7.0",
-    "grunt-notify": "~0.3.1"
+    "grunt-notify": "~0.3.1",
+    "grunt-contrib-imagemin": "~0.8.1",
+    "grunt-contrib-handlebars": "~0.8.0"
   }
 }
