@@ -36,7 +36,7 @@ component extends="org.corfield.framework" {
     	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
 
     	application.environment = getEnvironment();
-    	applicaion.schoolYear = local.objACPS.schoolYear(now());
+    	application.schoolYear = local.objACPS.schoolYear(now());
     	application.projectName = "Scaffolding";
 
     	if (application.environment eq "prod") {
