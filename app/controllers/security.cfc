@@ -3,12 +3,13 @@ component accessors=true {
 	//------------------------------------------------------------------------------------------
 	function init(fw) {
   	variables.fw = fw;
+    return this;
 	}
 	//------------------------------------------------------------------------------------------
 	function login(rc) {
 		param name = "rc.username" default = "";
     var args = {};
-    var use = "";
+    var user = "";
 
 		if (isdefined("rc.logout")) {
 		 	session.user.isLoggedIn = false;
@@ -16,13 +17,13 @@ component accessors=true {
 
 		if (len(trim(rc.username)) gt 0) {
   		args = {
-  			username = rc.usernafgime,
+  			username = rc.username,
   			password = rc.password,
   			ipAddress = cgi.remote_addr,
   			user_agent = cgi.user_agent
   		};
 
-  		user = variables.securityService.authenticate(argumentcollection = args);
+      user = variables.securityService.authenticate(argumentcollection = args);
 
   		if (!structIsEmpty(user)) {
   			session.user = {
@@ -36,7 +37,7 @@ component accessors=true {
 
   			variables.fw.redirect("main");
   		}
-		}
-	}
+    }
+  }
 	//------------------------------------------------------------------------------------------
 }
