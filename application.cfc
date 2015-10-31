@@ -7,7 +7,8 @@ component extends="framework.one" {
   // **********************************************************************************************
   variables.framework = {
     base = "/app",
-    error = "error_pages.error"
+    error = "error_pages.error",
+    diLocations = ["app/model"]
   };
   // **********************************************************************************************
   variables.framework.environments = {
