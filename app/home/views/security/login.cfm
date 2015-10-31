@@ -10,7 +10,6 @@
       </p>
     </div>
     <div class="col-md-4 col-md-offset-1">
-      <cfoutput>
       <form role="form" class="form-horizontal" id="loginForm" method="post" action="#buildURL('security.login')#">
         <div class="form-group">
           <label form="username" class="control-label col-md-3">Username</label>
@@ -30,7 +29,6 @@
           </div>
         </div>
       </form>
-      </cfoutput>
     </div>
   </div>
 </cfoutput>
