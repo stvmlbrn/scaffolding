@@ -6,9 +6,8 @@ component extends="framework.one" {
   this.setClientCookies = true;
   // **********************************************************************************************
   variables.framework = {
-    usingSubsystems = true,
     base = "/app",
-    error = "home:error_pages.error"
+    error = "error_pages.error"
   };
   // **********************************************************************************************
   variables.framework.environments = {
@@ -30,16 +29,11 @@ component extends="framework.one" {
   // **********************************************************************************************
   function setupApplication() {
     var config = deserializeJSON(fileRead(expandPath("/config/config.json")));
-    var homeBeanFactory = new ioc("/app/home/services");
-    var adminBeanFactory = new ioc("/app/admin/services");
 
     application.config = config[getEnvironment()];
 
     this.datasource = application.config.datasource;
     this.name = application.config.projectName & "-" & hash(getCurrentTemplatePath());
-
-  	setSubsystemBeanFactory("home", homeBeanFactory);
-  	setSubsystemBeanFactory("admin", adminBeanFactory);
   }
   // **********************************************************************************************
   function setupRequest() {
@@ -52,12 +46,8 @@ component extends="framework.one" {
   		if (structKeyExists(reqData.headers, "X-Requested-With") && reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
   			throw(message="SessionTimeout");
 			} else {
-				redirect("home:security.login");
+				redirect("security.login");
 			}
-  	}
-
-  	if (getSubSystem() eq "admin" && not session.user.admin) {
-  		redirect("home:main.access_denied");
   	}
   }
   // **********************************************************************************************
