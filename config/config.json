@@ -1,14 +1,14 @@
 {
 	"dev": {
 		"adminEmail": "BeSureTo@ChangeThis.com",
-		"datasource": "dev-datasource",
+		"datasource": "dev-scaffolding",
 		"environment": "dev",
 		"projectName": "Dev-Scaffolding",
 		"assetsFolder": "src"
 	},
 	"prod": {
 		"adminEmail": "BeSureTo@ChangeThis.com",
-		"datasource": "datasource",
+		"datasource": "scaffolding",
 		"environment": "prod",
 		"projectName": "Scaffolding",
 		"assetsFolder": "dist"
