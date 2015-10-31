@@ -8,7 +8,7 @@
 		"assetsFolder": "src"
 	},
 	"prod": {
-		"adminEmail": "Another@some.com",
+		"adminEmail": "BeSureTo@ChangeThis.com",
 		"datasource": "datasource",
 		"environment": "prod",
 		"projectName": "Scaffolding",
