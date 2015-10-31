@@ -1,2 +1,4 @@
 assets/dist/
+assets/libs/
+web.config
 node_modules
