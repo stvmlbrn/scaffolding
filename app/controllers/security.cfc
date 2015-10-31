@@ -2,34 +2,35 @@ component accessors=true {
  	property securityService;
   	//------------------------------------------------------------------------------------------
   	function init(fw) {
-    	variables.fw = arguments.fw;
-    	return this;
+    	variables.fw = fw;
 	}
   	//------------------------------------------------------------------------------------------
   	function login(rc) {
   		param name = "rc.username" default = "";
+      var args = {};
+      var use = "";
 
   		if (isdefined("rc.logout")) {
   		 	session.user.isLoggedIn = false;
   		}
 
   		if (len(trim(rc.username)) gt 0) {
-	  		local.args = {
+	  		args = {
 	  			username = rc.username,
 	  			password = rc.password,
 	  			ipAddress = cgi.remote_addr,
 	  			user_agent = cgi.user_agent
 	  		};
 
-	  		local.user = getSecurityService().authenticate(argumentcollection = local.args);
+	  		user = variables.securityService.authenticate(argumentcollection = args);
 
-	  		if (!structIsEmpty(local.user)) {
+	  		if (!structIsEmpty(user)) {
 	  			session.user = {
 	  				isLoggedIn = true,
 	  				admin = false,
-	  				fname = local.user.fname,
-	  				lname = local.user.lname,
-	  				email = local.user.email
+	  				fname = user.fname,
+	  				lname = user.lname,
+	  				email = user.email
 	  				//set other session variables here.
 	  			};
 
