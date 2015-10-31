@@ -16,7 +16,7 @@ component accessors=true {
 
 		if (len(trim(rc.username)) gt 0) {
   		args = {
-  			username = rc.username,
+  			username = rc.usernafgime,
   			password = rc.password,
   			ipAddress = cgi.remote_addr,
   			user_agent = cgi.user_agent
