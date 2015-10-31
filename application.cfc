@@ -1,19 +1,16 @@
 component extends="org.corfield.framework" {
-	//be sure to change this.name for each new project
-	this.sessionManagement = true; 
+	this.sessionManagement = true;
     this.scriptprotect = "all";
-    this.name = "AppName-#hash(getCurrentTemplatePath())#"; 
     this.sessionTimeout = createTimeSpan(0,1,0,0);
     this.applicationTimeout = createTimeSpan(0,7,0,0);
-    this.setClientCookies = true;  
-    this.datasource = "scaffolding"; //be sure to change
-    // ********************************************************************************************** 
+    this.setClientCookies = true;
+    // **********************************************************************************************
     variables.framework = {
         usingSubsystems = true,
         base = "/app",
         error = "home:error_pages.error"
     };
-    // **********************************************************************************************   
+    // **********************************************************************************************
     variables.framework.environments = {
         dev = {
             reloadApplicationOnEveryRequest = true
@@ -29,41 +26,33 @@ component extends="org.corfield.framework" {
     	} else {
     		return "prod";
     	}
-    }    
-    // **********************************************************************************************    
+    }
+    // **********************************************************************************************
     function setupApplication() {
-    	//Need to set the datasource, and projectName vars. Also be sure to add/change things in the config/*.json files.
-    	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
+        var config = deserializeJSON(fileRead(expandPath("/config/config.json")));
+        var homeBeanFactory = new ioc("/app/home/services");
+        var adminBeanFactory = new ioc("/app/admin/services");
 
-    	application.environment = getEnvironment();
-    	application.schoolYear = local.objACPS.schoolYear(now());
-    	application.projectName = "Scaffolding";
+        application.config = config[getEnvironment()];
 
-    	if (application.environment eq "prod") {
-            local.config = expandPath("/config/prod.json");
-    	} else if (application.environment eq "dev") {
-            local.config = expandPath("/config/dev.json");
-    	}
+        this.datasource = application.config.datasource;
+        this.name = application.config.projectName & "-" & hash(getCurrentTemplatePath());
 
-        application.config = deserializeJSON(fileRead(local.config));
-
-    	local.homeBeanFactory = new ioc("/app/home/services");
-    	setSubsystemBeanFactory("home", local.homeBeanFactory);
-    	local.adminBeanFactory = new ioc("/app/admin/services");
-    	setSubsystemBeanFactory("admin", local.adminBeanFactory);
+    	setSubsystemBeanFactory("home", homeBeanFactory);
+    	setSubsystemBeanFactory("admin", adminBeanFactory);
     }
     // **********************************************************************************************
     function setupRequest() {
     	param name="session.user.isLoggedIn" default="false";
+        var bypass = "home:security.login";
+        var reqData = "";
 
-    	local.bypass = "home:security.login";
-
-    	if (listContainsNoCase(local.bypass, request.action) eq 0 && (not session.user.isLoggedIn or structKeyExists(session,"user") eq 0)) {
-    		local.reqData = getHTTPRequestData();
-    		if (structKeyExists(local.reqData.headers, "X-Requested-With") && local.reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
+    	if (listContainsNoCase(bypass, request.action) eq 0 && (not session.user.isLoggedIn or structKeyExists(session,"user") eq 0)) {
+    		reqData = getHTTPRequestData();
+    		if (structKeyExists(reqData.headers, "X-Requested-With") && reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
     			throw(message="SessionTimeout");
 			} else {
-				redirect("home:security.login");				
+				redirect("home:security.login");
 			}
     	}
 
@@ -80,18 +69,21 @@ component extends="org.corfield.framework" {
     }
     // **********************************************************************************************
     function onMissingView(rc) {
-         savecontent variable="local.body" {
+        var messageBody = "";
+        var mailer = new mail();
+
+         savecontent variable="messageBody" {
             writeDump(var=session, label="Session Data");
             writeDump(var=cgi, label="CGI Data");
         };
 
-        local.mailer = new mail();
-        local.mailer.setTo(application.config.adminEmail);
-        local.mailer.setFrom(application.projectName & " <no-reply@noreply.com>");
-        local.mailer.setSubject("404 - Missing Template");
-        local.mailer.setType("html");
-        local.mailer.send(body=local.body); 
-        
+        mailer = new mail();
+        mailer.setTo(application.config.adminEmail);
+        mailer.setFrom(application.config.projectName & " <no-reply@noreply.com>");
+        mailer.setSubject("404 - Missing Template");
+        mailer.setType("html");
+        mailer.send(body = messageBody);
+
         getPageContext().getResponse().setStatus(404);
 
     	return view("home:error_pages/404");
