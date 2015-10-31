@@ -1,0 +1,14 @@
+{
+	"dev": {
+		"adminEmail": "BeSureTo@ChangeThis.com",
+		"environment": "dev",
+		"projectName": "Dev-Scaffolding",
+		"assetsFolder": "src"
+	},
+	"prod": {
+		"adminEmail": "BeSureTo@ChangeThis.com",
+		"environment": "prod",
+		"projectName": "Scaffolding",
+		"assetsFolder": "dist"
+	}
+}

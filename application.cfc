@@ -1,100 +1,82 @@
-component extends="org.corfield.framework" {
-	//be sure to change this.name for each new project
-	this.sessionManagement = true; 
-    this.scriptprotect = "all";
-    this.name = "AppName-#hash(getCurrentTemplatePath())#"; 
-    this.sessionTimeout = createTimeSpan(0,1,0,0);
-    this.applicationTimeout = createTimeSpan(0,7,0,0);
-    this.setClientCookies = true;  
-    this.datasource = "scaffolding"; //be sure to change
-    // ********************************************************************************************** 
-    variables.framework = {
-        usingSubsystems = true,
-        base = "/app",
-        error = "home:error_pages.error"
-    };
-    // **********************************************************************************************   
-    variables.framework.environments = {
-        dev = {
-            reloadApplicationOnEveryRequest = true
-        },
-        prod = {
-            password = "password" //Be sure to change the reload password
-        }
-    };
-    // **********************************************************************************************
-    function getEnvironment() {
-    	if (listFindNoCase(cgi.server_name, "dev", ".")) {
-    		return "dev";
-    	} else {
-    		return "prod";
-    	}
-    }    
-    // **********************************************************************************************    
-    function setupApplication() {
-    	//Need to set the datasource, and projectName vars. Also be sure to add/change things in the config/*.json files.
-    	local.objACPS = createobject("webservice", "http://webservices.allconet.org/acps.cfc?wsdl");
-
-    	application.environment = getEnvironment();
-    	application.schoolYear = local.objACPS.schoolYear(now());
-    	application.projectName = "Scaffolding";
-
-    	if (application.environment eq "prod") {
-            local.config = expandPath("/config/prod.json");
-    	} else if (application.environment eq "dev") {
-            local.config = expandPath("/config/dev.json");
-    	}
-
-        application.config = deserializeJSON(fileRead(local.config));
-
-    	local.homeBeanFactory = new ioc("/app/home/services");
-    	setSubsystemBeanFactory("home", local.homeBeanFactory);
-    	local.adminBeanFactory = new ioc("/app/admin/services");
-    	setSubsystemBeanFactory("admin", local.adminBeanFactory);
+component extends="framework.one" {
+	this.sessionManagement = true;
+  this.scriptprotect = "all";
+  this.sessionTimeout = createTimeSpan(0,1,0,0);
+  this.applicationTimeout = createTimeSpan(0,7,0,0);
+  this.setClientCookies = true;
+  this.datasource = "dev-scaffolding";  //needs changed
+  this.name = "scaffolding-#hash(getCurrentTemplatePath())#";
+  // **********************************************************************************************
+  variables.framework = {
+    base = "/app",
+    error = "error_pages.error",
+    diLocations = ["app/model"]
+  };
+  // **********************************************************************************************
+  variables.framework.environments = {
+    dev = {
+      reloadApplicationOnEveryRequest = true
+    },
+    prod = {
+      password = "password" //Be sure to change the reload password
     }
-    // **********************************************************************************************
-    function setupRequest() {
-    	param name="session.user.isLoggedIn" default="false";
+  };
+  // **********************************************************************************************
+  function getEnvironment() {
+  	if (listFindNoCase(cgi.server_name, "dev", ".")) {
+  		return "dev";
+  	} else {
+  		return "prod";
+  	}
+  }
+  // **********************************************************************************************
+  function setupApplication() {
+    var config = deserializeJSON(fileRead(expandPath("/config/config.json")));
 
-    	local.bypass = "home:security.login";
+    application.config = config[getEnvironment()];
+  }
+  // **********************************************************************************************
+  function setupRequest() {
+  	param name="session.user.isLoggedIn" default="false";
+    var bypass = "home:security.login";
+    var reqData = "";
 
-    	if (listContainsNoCase(local.bypass, request.action) eq 0 && (not session.user.isLoggedIn or structKeyExists(session,"user") eq 0)) {
-    		local.reqData = getHTTPRequestData();
-    		if (structKeyExists(local.reqData.headers, "X-Requested-With") && local.reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
-    			throw(message="SessionTimeout");
+  	if (listContainsNoCase(bypass, request.action) eq 0 && (not session.user.isLoggedIn or structKeyExists(session,"user") eq 0)) {
+  		reqData = getHTTPRequestData();
+  		if (structKeyExists(reqData.headers, "X-Requested-With") && reqData.headers["X-Requested-With"] eq "XMLHttpRequest") {
+  			throw(message="SessionTimeout");
 			} else {
-				redirect("home:security.login");				
+				redirect("security.login");
 			}
-    	}
+  	}
+  }
+  // **********************************************************************************************
+  function setupSession() {
+  	session.user = {
+  		isLoggedIn = false,
+  		admin = false
+  	};
+  }
+  // **********************************************************************************************
+  function onMissingView(rc) {
+    var messageBody = "";
+    var mailer = new mail();
 
-    	if (getSubSystem() eq "admin" && not session.user.admin) {
-    		redirect("home:main.access_denied");
-    	}
-    }
-    // **********************************************************************************************
-    function setupSession() {
-    	session.user = {
-    		isLoggedIn = false,
-    		admin = false
-    	};
-    }
-    // **********************************************************************************************
-    function onMissingView(rc) {
-         savecontent variable="local.body" {
-            writeDump(var=session, label="Session Data");
-            writeDump(var=cgi, label="CGI Data");
-        };
+    savecontent variable="messageBody" {
+        writeDump(var=session, label="Session Data");
+        writeDump(var=cgi, label="CGI Data");
+    };
 
-        local.mailer = new mail();
-        local.mailer.setTo(application.config.adminEmail);
-        local.mailer.setFrom(application.projectName & " <no-reply@noreply.com>");
-        local.mailer.setSubject("404 - Missing Template");
-        local.mailer.setType("html");
-        local.mailer.send(body=local.body); 
-        
-        getPageContext().getResponse().setStatus(404);
+    mailer = new mail();
+    mailer.setTo(application.config.adminEmail);
+    mailer.setFrom(application.config.projectName & " <no-reply@noreply.com>");
+    mailer.setSubject("404 - Missing Template");
+    mailer.setType("html");
+    mailer.send(body = messageBody);
 
-    	return view("home:error_pages/404");
-    }
-    // **********************************************************************************************
+    getPageContext().getResponse().setStatus(404);
+
+  	return view("home:error_pages/404");
+  }
+  // **********************************************************************************************
 }
