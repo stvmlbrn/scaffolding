@@ -4,6 +4,8 @@ component extends="framework.one" {
   this.sessionTimeout = createTimeSpan(0,1,0,0);
   this.applicationTimeout = createTimeSpan(0,7,0,0);
   this.setClientCookies = true;
+  this.datasource = "dev-scaffolding";  //needs changed
+  this.name = "scaffolding-#hash(getCurrentTemplatePath())#";
   // **********************************************************************************************
   variables.framework = {
     base = "/app",
@@ -32,9 +34,6 @@ component extends="framework.one" {
     var config = deserializeJSON(fileRead(expandPath("/config/config.json")));
 
     application.config = config[getEnvironment()];
-
-    this.datasource = application.config.datasource;
-    this.name = application.config.projectName & "-" & hash(getCurrentTemplatePath());
   }
   // **********************************************************************************************
   function setupRequest() {
