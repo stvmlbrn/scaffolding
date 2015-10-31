@@ -4,7 +4,6 @@
 		"datasource": "dev-datasource",
 		"environment": "dev",
 		"projectName": "Dev-Scaffolding",
-		"ldapServer": "192.168.8.150",
 		"assetsFolder": "src"
 	},
 	"prod": {
@@ -12,7 +11,6 @@
 		"datasource": "datasource",
 		"environment": "prod",
 		"projectName": "Scaffolding",
-		"ldapServer": "192.168.8.150",
 		"assetsFolder": "dist"
 	}
 }
