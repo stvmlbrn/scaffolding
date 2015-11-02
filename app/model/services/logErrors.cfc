@@ -12,7 +12,7 @@ component {
 		};
 
 		mailer.setTo(application.config.adminEmail);
-		mailer.setFrom("#application.config.projectName# <no-rely@acps.k12.md.us>");
+		mailer.setFrom("#application.config.projectName# <#application.config.adminEmail#>");
 		mailer.setSubject("#application.config.projectName# Error");
 		mailer.setType("html");
 		mailer.send(body = messageBody);
