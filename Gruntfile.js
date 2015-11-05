@@ -1,24 +1,30 @@
+"use strict";
+
 module.exports = function(grunt) {
+  require("load-grunt-tasks")(grunt);
+
 	grunt.initConfig({
+    pkg: grunt.file.readJSON("package.json"),
+
 		jshint: {
-			all: ["assets/src/js/**/*.js"]	
+			all: ["assets/src/js/**/*.js"]
 		},
-		
+
 		uglify: {
 			build: {
 				files: [{
 					cwd: "assets/src/js",
 					src: "**/*.js",
 					dest: "assets/dist/js/",
-					expand: true 
+					expand: true
 				}]
 			}
 		},
-		
+
 		cssmin: {
 			build: {
 				files: {
-					"assets/dist/css/main.min.css": "assets/src/css/main.css"	
+					"assets/dist/css/main.min.css": "assets/src/css/main.css"
 				}
 			}
 		},
@@ -42,14 +48,14 @@ module.exports = function(grunt) {
 				processName: function(filePath) {
 					return filePath.replace(/^assets\/src\/templates\//,"").replace(/\.hbs$/,"");
 				}
-			}, 			
+			},
 			all: {
 				files: {
 					"assets/dist/templates/principal.js": ["assets/src/templates/principal/*.hbs"]
 				}
 			}
 		},
-		
+
 		watch: {
 			css: {
 				files: ["assets/src/css/**/*.css"],
@@ -68,24 +74,14 @@ module.exports = function(grunt) {
 				tasks: ["newer:handlebars"]
 			}
 		},
-		
+
 		concurrent: {
 			options: {
-				logConcurrentOutput: true	
+				logConcurrentOutput: true
 			},
 			tasks: ["watch"]
 		}
 	});
-	
-	grunt.loadNpmTasks("grunt-contrib-jshint");
-	grunt.loadNpmTasks("grunt-contrib-uglify");
-	grunt.loadNpmTasks("grunt-contrib-cssmin");
-	grunt.loadNpmTasks("grunt-contrib-watch");
-	grunt.loadNpmTasks("grunt-concurrent");
-	grunt.loadNpmTasks("grunt-newer");
-	grunt.loadNpmTasks("grunt-notify");
-	grunt.loadNpmTasks("grunt-contrib-imagemin");
-	grunt.loadNpmTasks("grunt-contrib-handlebars");
-	
+
 	grunt.registerTask("default",["jshint","uglify","imagemin","cssmin","handlebars","concurrent"]);
 };
